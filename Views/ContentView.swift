@@ -16,7 +16,7 @@ struct ContentView: View {
                 Text("당신의 좌표 : \(location.longitude), \(location.latitude)")
             } else {
                 if locationManager.isLoading {
-                    ProgressView()
+                    LoadingView()
                 } else {
                     StartUpView()
                         .environmentObject(locationManager)
