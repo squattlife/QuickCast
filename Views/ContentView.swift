@@ -9,11 +9,24 @@ import SwiftUI
 
 struct ContentView: View {
     @StateObject var locationManager = LocationManager()
+    var weatherManager = WeatherManager()
+    @State var weather: ResponseBody?
+    
     var body: some View {
         VStack {
-            
             if let location = locationManager.location {
-                Text("당신의 좌표 : \(location.longitude), \(location.latitude)")
+                if let weather = weather {
+                    Text("날씨 데이터 fetch 성공!")
+                } else {
+                    LoadingView()
+                        .task {
+                            do {
+                                weather = try await weatherManager.getCurrentWeather(latitude: location.latitude, longtitude: location.longitude)
+                            } catch {
+                                print("날씨를 불러오는데 실패! : \(error)")
+                            }
+                        }
+                }
             } else {
                 if locationManager.isLoading {
                     LoadingView()
