@@ -9,7 +9,7 @@ import Foundation
 
 struct ResponseBody: Decodable {
     var coord: CoordinatesResponse
-    var weather: [WeatherResponse]
+    var weather: WeatherResponse
     var main: MainResponse
     var name: String
     var wind: WindResponse
