@@ -9,6 +9,11 @@ import SwiftUI
 
 struct WeatherView: View {
     
+    // 제스처 프로퍼티들
+    @State var offset: CGFloat = 0
+    @State var lastOffset: CGFloat = 0
+    @GestureState var gestureOffset: CGFloat = 0
+    
     var weather: ResponseBody
     
     var formattedSunrise: String {
@@ -75,17 +80,58 @@ struct WeatherView: View {
             .foregroundColor(.white)
             .padding(.bottom, 240)
             
-            // Drag Gesture의 높이를 받기 위해,,
+            // Drag 제스처 의 높이를 받기 위해,,
             GeometryReader { proxy in
                 let height = proxy.frame(in: .global).height
                 
-                BlurView(style: .systemThinMaterialDark)
+                ZStack {
+                    BlurView(style: .systemThinMaterialDark)
+                        .clipShape(CustomCorner(corners: [.topLeft, .topRight], radius: 30))
+                    
+                    VStack {
+                        Capsule()
+                            .fill(.gray)
+                            .frame(width: 70, height: 4)
+                            .padding(.top)
+                    }
+                    .frame(maxHeight: .infinity, alignment: .top)
+                }
+                .offset(y: height - 100)
+                .offset(y: offset)
+                .gesture(DragGesture().updating($gestureOffset, body: { value, out, _ in
+                    out = value.translation.height
+                    
+                    onChange()
+                }).onEnded({ value in
+                    
+                    let maxHeight = height - 100
+                    withAnimation {
+                        // Sheet 이동에 따른 높이설정 - Up/Mid/Down
+                        if -offset > 100 && -offset < maxHeight / 2 {
+                            // Mid
+                            offset = -(maxHeight / 3)
+                        } else if -offset > maxHeight / 2 {
+                            offset = -maxHeight
+                        } else {
+                            offset = 0
+                        }
+                    }
+                    
+                    // 사용자의 Drag 제스처를 통한 sheet높이를 유지하기 위해
+                    lastOffset = offset
+        
+                }))
+                
             }
             .ignoresSafeArea(.all, edges: .bottom)
-
-            
         }
         .background(Color(hue: 0.675, saturation: 0.799, brightness: 0.368))
+    }
+    
+    func onChange() {
+        DispatchQueue.main.async {
+            self.offset = gestureOffset + lastOffset
+        }
     }
     
 }
