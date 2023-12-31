@@ -29,7 +29,7 @@ struct WeatherView: View {
         ZStack {
             VStack() {
                 Text(weather.name)
-                    .bold().font(.title).padding(.top, 80)
+                    .bold().font(.title).padding(.top, 40)
                 
                 Image(weather.weather.main)
                     .resizable()
@@ -75,10 +75,13 @@ struct WeatherView: View {
                 }
                 
                 
+                
+                
             }
             .frame(maxWidth: .infinity)
             .foregroundColor(.white)
-            .padding(.bottom, 240)
+            .padding(.bottom, 300)
+            .blur(radius: getBlurRadius())
             
             // Drag 제스처 의 높이를 받기 위해,,
             GeometryReader { proxy in
@@ -86,31 +89,33 @@ struct WeatherView: View {
                 
                 ZStack {
                     BlurView(style: .systemThinMaterialDark)
-                        .clipShape(CustomCorner(corners: [.topLeft, .topRight], radius: 30))
+                        .clipShape(CustomCorner(corners: [.topLeft, .topRight], radius: 45))
                     
                     VStack {
+                        
                         Capsule()
                             .fill(.gray)
                             .frame(width: 70, height: 4)
                             .padding(.top)
+                        
+                        // Bottom Sheet Contents
+                         BottomContent()
+                        
                     }
                     .frame(maxHeight: .infinity, alignment: .top)
                 }
-                .offset(y: height - 100)
-                .offset(y: offset)
+                .offset(y: height - 240)
+                .offset(y: -offset > 0 ? (-offset <= (height-240) ? offset : (height - 240)) : 0)
                 .gesture(DragGesture().updating($gestureOffset, body: { value, out, _ in
                     out = value.translation.height
                     
                     onChange()
                 }).onEnded({ value in
                     
-                    let maxHeight = height - 100
+                    let maxHeight = height - 430 // Up 제스처시 Sheet 높이
                     withAnimation {
-                        // Sheet 이동에 따른 높이설정 - Up/Mid/Down
-                        if -offset > 100 && -offset < maxHeight / 2 {
-                            // Mid
-                            offset = -(maxHeight / 3)
-                        } else if -offset > maxHeight / 2 {
+                        // Sheet 이동에 따른 높이설정 - Up/Down
+                        if -offset > maxHeight / 2 {
                             offset = -maxHeight
                         } else {
                             offset = 0
@@ -133,6 +138,14 @@ struct WeatherView: View {
             self.offset = gestureOffset + lastOffset
         }
     }
+    
+    // background blur during drag
+    func getBlurRadius() -> CGFloat {
+        let progress = -offset / (UIScreen.main.bounds.height - 100)
+        
+        return progress * 20
+    }
+    
     
 }
 //        ZStack(alignment: .center) {
@@ -210,6 +223,29 @@ struct WeatherView: View {
 //
 //    }
 //}
+
+struct BottomContent: View {
+    var body: some View {
+        VStack {
+            HStack {
+                Text("Daily Weather")
+                    .bold().foregroundColor(.gray)
+                    .padding(.leading, 30)
+                Spacer()
+            }
+            
+            Divider()
+                .background(.white)
+                .padding(.leading).padding(.trailing)
+                
+            // 주간 날씨
+            HStack {
+                
+            }
+            
+        }
+    }
+}
 
 struct WeatherView_Previews: PreviewProvider {
     static var previews: some View {
