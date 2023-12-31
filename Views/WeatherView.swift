@@ -8,54 +8,86 @@
 import SwiftUI
 
 struct WeatherView: View {
+    
     var weather: ResponseBody
+    
+    var formattedSunrise: String {
+        let sunriseTimestamp = TimeInterval(weather.sys.sunrise)
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "HH:mm"
+        
+        let sunriseDate = Date(timeIntervalSince1970: sunriseTimestamp)
+        return dateFormatter.string(from: sunriseDate)
+    }
+    
     var body: some View {
-        VStack() {
-            Text(weather.name)
-                .bold().font(.title).padding(.top, 120)
-            
-            Image(weather.weather.main)
-                .resizable()
-                .frame(width: 220, height: 200)
-            
-            Text(weather.main.feels_like.roundDouble() + "°")
-                .font(.system(size: 100))
-                .fontWeight(.heavy)
-                .padding()
-            
-            Spacer()
-            
-            HStack(spacing: 60) {
-                HStack {
-                    Image(systemName: "wind")
-                        .resizable()
-                        .frame(width: 25, height: 25)
-                    Text(String(weather.wind.speed) + "km")
-                        .font(.system(size: 19))
+        ZStack {
+            VStack() {
+                Text(weather.name)
+                    .bold().font(.title).padding(.top, 80)
+                
+                Image(weather.weather.main)
+                    .resizable()
+                    .frame(width: 220, height: 200)
+                    .padding(.top, 30)
+                
+                Text(weather.main.feels_like.roundDouble() + "°")
+                    .font(.system(size: 100))
+                    .fontWeight(.heavy)
+                    .padding()
+                
+                Spacer()
+                
+                HStack(spacing: 40) {
+                    HStack {
+                        Image(systemName: "wind")
+                            .resizable()
+                            .frame(width: 25, height: 25)
+                            .padding(2)
+                        Text(String(weather.wind.speed.roundDouble()) + "km")
+                            .font(.system(size: 19))
+                    }
+                    
+                    HStack {
+                        Image(systemName: "humidity")
+                            .resizable()
+                            .frame(width: 25, height: 25)
+                            .padding(2)
+                        Text(String(weather.main.humidity.roundDouble()) + "%")
+                            .font(.system(size: 19))
+                    }
+                    
+                    
+                    
+                    HStack {
+                        Image(systemName: "sun.haze")
+                            .resizable()
+                            .frame(width: 25, height: 25)
+                            .padding(2)
+                        Text("\(formattedSunrise) AM")
+                            .font(.system(size: 19))
+                    }
                 }
                 
-                HStack {
-                    Image(systemName: "humidity")
-                        .resizable()
-                        .frame(width: 25, height: 25)
-                    Text(String(weather.main.humidity) + "%")
-                        .font(.system(size: 19))
-                }
                 
-                HStack {
-                    Text("12")
-                    Text("12")
-                        .font(.system(size: 19))
-                }
             }
-                        
+            .frame(maxWidth: .infinity)
+            .foregroundColor(.white)
+            .padding(.bottom, 240)
             
-            Spacer()
+            // Drag Gesture의 높이를 받기 위해,,
+            GeometryReader { proxy in
+                let height = proxy.frame(in: .global).height
+                
+                BlurView(style: .systemThinMaterialDark)
+            }
+            .ignoresSafeArea(.all, edges: .bottom)
+
+            
         }
-        .frame(maxWidth: .infinity)
-        .foregroundColor(.white)
         .background(Color(hue: 0.675, saturation: 0.799, brightness: 0.368))
     }
+    
 }
 //        ZStack(alignment: .center) {
 //            VStack {
