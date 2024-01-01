@@ -6,24 +6,22 @@
 //
 
 import SwiftUI
+import CoreLocation
 
 struct ContentView: View {
     @StateObject var locationManager = LocationManager()
     var weatherManager = WeatherManager()
-    var weeklyWeatherManager = WeeklyWeatherManager()
     @State var weather: ResponseBody?
-    @State var weeklyWeather: WeeklyResponseBody?
     
     var body: some View {
         VStack {
             if let location = locationManager.location {
                 if let weather = weather {
-                    WeatherView(weather: weather, weeklyWeather: weeklyWeather!)
+                    WeatherView(weatherVM: WeatherViewModel(), weather: weather)
                 } else {
                     LoadingView()
                         .task {
                             do {
-                                weeklyWeather = try await weeklyWeatherManager.getCurrentWeather(latitude: location.latitude, longtitude: location.longitude)
                                 weather = try await weatherManager.getCurrentWeather(latitude: location.latitude, longtitude: location.longitude)
                             } catch {
                                 print("날씨를 불러오는데 실패! : \(error)")
