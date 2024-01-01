@@ -8,7 +8,6 @@
 import Foundation
 
 var previewWeather: ResponseBody = load("weatherData.json")
-var previewWeeklyWeather: WeeklyResponseBody = load("weeklyWeatherData.json")
 
 // 받아온 json 데이터를 앱에 로드하고 파싱할 메서드
 func load<T: Decodable>(_ filename: String) -> T {
