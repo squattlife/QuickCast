@@ -31,7 +31,7 @@ struct WeatherView: View {
                 Text(weather.name)
                     .bold().font(.title).padding(.top, 40)
                 
-                Image(weather.weather.main)
+                Image(weather.weather[0].main)
                     .resizable()
                     .frame(width: 220, height: 200)
                     .padding(.top, 30)
