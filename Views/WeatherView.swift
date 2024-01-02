@@ -15,6 +15,7 @@ struct WeatherView: View {
     @GestureState var gestureOffset: CGFloat = 0
     
     var weather: ResponseBody
+    var dailyWeather: DailyWeatherModel
     
     var formattedSunrise: String {
         let sunriseTimestamp = TimeInterval(weather.sys.sunrise)
@@ -175,6 +176,6 @@ struct BottomContent: View {
 
 struct WeatherView_Previews: PreviewProvider {
     static var previews: some View {
-        WeatherView(weather: previewWeather)
+        WeatherView(weather: previewWeather, dailyWeather: previewDailyWeather)
     }
 }

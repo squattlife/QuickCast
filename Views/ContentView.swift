@@ -11,18 +11,24 @@ import CoreLocation
 struct ContentView: View {
     @StateObject var locationManager = LocationManager()
     var weatherManager = WeatherManager()
+    var dailyWeatherManager = DailyWeatherManager()
     @State var weather: ResponseBody?
+    @State var dailyWeather: DailyWeatherModel?
     
     var body: some View {
         VStack {
             if let location = locationManager.location {
-                if let weather = weather {
-                    WeatherView(weather: weather)
+                if let weather = weather, let dailyWeather = dailyWeather {
+                    WeatherView(weather: weather, dailyWeather: dailyWeather)
                 } else {
                     LoadingView()
                         .task {
                             do {
+                                
+                                dailyWeather = try await dailyWeatherManager.getDailyWeather(latitude: location.latitude, longtitude: location.longitude)
+                                
                                 weather = try await weatherManager.getCurrentWeather(latitude: location.latitude, longtitude: location.longitude)
+                                
                             } catch {
                                 print("날씨를 불러오는데 실패! : \(error)")
                             }
