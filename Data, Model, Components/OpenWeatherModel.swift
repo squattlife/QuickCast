@@ -7,6 +7,7 @@
 
 import Foundation
 
+// 현재 날씨 데이터모델
 struct ResponseBody: Decodable {
     var coord: CoordinatesResponse
     var weather: [WeatherResponse]
@@ -50,16 +51,80 @@ struct ResponseBody: Decodable {
     }
 }
 
+// 일일 기상 데이터모델
 struct DailyWeatherModel: Decodable {
-    var daily: [Daily]
-    
-    struct Daily: Decodable {
-        var dt: Double
-        var temp: Temp
-        
-        struct Temp: Codable {
-            var min: Double
-            var max: Double
-        }
+    struct WeatherData: Codable {
+        let cod: String
+        let message: Int
+        let cnt: Int
+        let list: [WeatherInfo]
+        let city: CityInfo
+    }
+
+    struct WeatherInfo: Codable {
+        let dt: Int
+        let main: MainInfo
+        let weather: [WeatherDetail]
+        let clouds: CloudInfo
+        let wind: WindInfo
+        let visibility: Int
+        let pop: Double
+        let rain: RainInfo?
+        let sys: SysInfo
+        let dt_txt: String
+    }
+
+    struct MainInfo: Codable {
+        let temp: Double
+        let feels_like: Double
+        let temp_min: Double
+        let temp_max: Double
+        let pressure: Int
+        let sea_level: Int
+        let grnd_level: Int
+        let humidity: Int
+        let temp_kf: Double
+    }
+
+    struct WeatherDetail: Codable {
+        let id: Int
+        let main: String
+        let description: String
+        let icon: String
+    }
+
+    struct CloudInfo: Codable {
+        let all: Int
+    }
+
+    struct WindInfo: Codable {
+        let speed: Double
+        let deg: Int
+        let gust: Double
+    }
+
+    struct RainInfo: Codable {
+        let _3h: Double
+    }
+
+    struct SysInfo: Codable {
+        let pod: String
+    }
+
+    struct CityInfo: Codable {
+        let id: Int
+        let name: String
+        let coord: CoordInfo
+        let country: String
+        let population: Int
+        let timezone: Int
+        let sunrise: Int
+        let sunset: Int
+    }
+
+    struct CoordInfo: Codable {
+        let lat: Double
+        let lon: Double
     }
 }
+
