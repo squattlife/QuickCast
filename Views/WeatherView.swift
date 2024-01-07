@@ -15,7 +15,6 @@ struct WeatherView: View {
     @GestureState var gestureOffset: CGFloat = 0
     
     var weather: ResponseBody
-    var dailyWeather: DailyWeatherModel
     
     var formattedSunrise: String {
         let sunriseTimestamp = TimeInterval(weather.sys.sunrise)
@@ -37,7 +36,7 @@ struct WeatherView: View {
                     .frame(width: 220, height: 200)
                     .padding(.top, 30)
                 
-                Text(weather.main.feels_like.roundDouble() + "°")
+                Text(weather.main.temp.roundDouble() + "°")
                     .font(.system(size: 100))
                     .fontWeight(.heavy)
                     .padding()
@@ -74,10 +73,6 @@ struct WeatherView: View {
                             .font(.system(size: 19))
                     }
                 }
-                
-                
-                
-                
             }
             .frame(maxWidth: .infinity)
             .foregroundColor(.white)
@@ -100,7 +95,7 @@ struct WeatherView: View {
                             .padding(.top)
                         
                         // Bottom Sheet Contents
-                         BottomContent()
+                        BottomContent(weather: weather)
                         
                     }
                     .frame(maxHeight: .infinity, alignment: .top)
@@ -125,7 +120,7 @@ struct WeatherView: View {
                     
                     // 사용자의 Drag 제스처를 통한 sheet높이를 유지하기 위해
                     lastOffset = offset
-        
+                    
                 }))
                 
             }
@@ -146,36 +141,70 @@ struct WeatherView: View {
         
         return progress * 20
     }
-    
-    
 }
 
 
 struct BottomContent: View {
+    
+    var weather: ResponseBody
+
     var body: some View {
         VStack {
             HStack {
-                Text("Daily Weather")
+                Text("Other Forecast Info")
                     .bold().foregroundColor(.gray)
                     .padding(.leading, 30)
                 Spacer()
             }
-            
+
             Divider()
                 .background(.white)
                 .padding(.leading).padding(.trailing)
-                
-            // 주간 날씨
-            HStack {
-                
-            }
             
+            HStack(spacing: 50) {
+                VStack {
+                    Image(systemName: "sun.haze")
+                        .resizable()
+                        .frame(width: 55, height: 55)
+                        .padding(10)
+                    Text("체감 온도")
+                    Text(weather.main.feels_like.roundDouble() + "°")
+                }
+                
+                VStack {
+                    Image(systemName: "thermometer.low")
+                        .resizable()
+                        .frame(width: 35, height: 55)
+                        .padding(10)
+                    Text("최저 기온")
+                    Text(weather.main.temp_min.roundDouble() + "°")
+                }
+                
+                VStack {
+                    Image(systemName: "thermometer.high")
+                        .resizable()
+                        .frame(width: 35, height: 55)
+                        .padding(10)
+                    Text("최고 기온")
+                    Text(weather.main.temp_max.roundDouble() + "°")
+                }
+            }
+            .padding(.top, 12)
+            .foregroundColor(Color(hue: 1.0, saturation: 0.0, brightness: 0.819))
         }
+    }
+
+    func formattedDate(timestamp: Date) -> String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+        return dateFormatter.string(from: timestamp)
     }
 }
 
+
 struct WeatherView_Previews: PreviewProvider {
     static var previews: some View {
-        WeatherView(weather: previewWeather, dailyWeather: previewDailyWeather)
+        
+        WeatherView(weather: previewWeather)
     }
 }
